@@ -1,14 +1,13 @@
 {
-  "name": "nyumbadigi-backend",
+  "name": "socialbutterfly-backend",
   "version": "1.0.0",
-  "description": "backend for nyumbadigi written in typescript",
+  "description": "backend for socialbutterfly written in typescript",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx nodemon",
     "migrate": "npx prisma migrate dev --name init"
   },
-  "author": "kalina",
+  "author": "William Okoth & Lorraine Rono",
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

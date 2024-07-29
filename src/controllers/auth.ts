@@ -6,7 +6,7 @@ import { JWT_SECRET } from "../secrets";
 import { BadRequestsException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
 import { UnprocessableEntity } from "../exceptions/validation";
-import { SignupSchema } from "../schemas/users";
+import { LoginSchema, SignupSchema } from "../schemas/users";
 import { NotFoundException } from "../exceptions/not-found";
 
 export const signup = async (
@@ -25,6 +25,7 @@ export const signup = async (
     postalCode,
     identificationNumber,
   } = req.body;
+  console.log("signup", req.body);
 
   let user = await prismaClient.user.findFirst({ where: { email } });
 
@@ -48,17 +49,19 @@ export const signup = async (
       identificationNumber,
     },
   });
+  const token = jwt.sign({ userId: user.id }, JWT_SECRET);
   res.status(200).json({
     userInfo: {
       firstName: user.firstName,
       lastName: user.lastName,
-      email: user.lastName,
+      email: user.email,
       address: user.address,
       county: user.county,
       postalCode: user.postalCode,
       identificationNumber: user.identificationNumber,
     },
     message: "User Created Successfully",
+    token,
   });
 };
 
@@ -67,6 +70,7 @@ export const login = async (
   res: Response,
   next: NextFunction
 ) => {
+  LoginSchema.parse(req.body);
   const { email, password } = req.body;
 
   let user = await prismaClient.user.findFirst({ where: { email } });
@@ -90,7 +94,7 @@ export const login = async (
       userInfo: {
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.lastName,
+        email: user.email,
         address: user.address,
         county: user.county,
         postalCode: user.postalCode,

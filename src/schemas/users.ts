@@ -13,6 +13,15 @@ export const SignupSchema = z.object({
     message: "Email is invalid",
   }),
   password: z.string().min(6, {
-    message: "Password must contain at least 8 characters",
+    message: "Password must contain at least 6 characters",
+  }),
+});
+
+export const LoginSchema = z.object({
+  email: z.string().email({
+    message: "Email is invalid",
+  }),
+  password: z.string().min(6, {
+    message: "Password must contain at least 6 characters",
   }),
 });

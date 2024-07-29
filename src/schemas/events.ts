@@ -16,6 +16,8 @@ export const EventSchema = z.object({
   mapData: z.object({
     longitude: z.number(),
     latitude: z.number(),
+    longitudeDelta: z.number(),
+    latitudeDelta: z.number(),
   }),
   photos: z.array(z.string().url()),
   price: z.number().nonnegative(),
