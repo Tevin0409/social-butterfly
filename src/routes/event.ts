@@ -5,7 +5,10 @@ import {
   deleteEvent,
   editEvent,
   fetchAllEvents,
+  fetchCategories,
+  fetchChatMessages,
   fetchEventById,
+  fetchEventsByCategory,
   fetchUserEvents,
 } from "../controllers/event";
 import authMiddleware from "../middlewares/auth";
@@ -26,5 +29,11 @@ eventRoutes.delete(
   [authMiddleware],
   errorHandler(deleteEvent)
 );
+eventRoutes.get("/fetch-categories", errorHandler(fetchCategories));
+eventRoutes.get(
+  "/fetch-events/category/:category",
+  errorHandler(fetchEventsByCategory)
+);
+eventRoutes.get("/chat/:eventId", errorHandler(fetchChatMessages));
 
 export default eventRoutes;

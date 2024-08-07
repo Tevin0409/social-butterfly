@@ -33,5 +33,5 @@ export const EventSchema = z.object({
     .datetime()
     .optional()
     .default(() => new Date().toISOString()),
-  // Additional fields not present in ListingSchema
+  categories: z.array(z.string()).optional(), // Add this line to accommodate categories
 });
