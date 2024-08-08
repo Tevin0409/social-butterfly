@@ -4,6 +4,7 @@
   "description": "backend for socialbutterfly written in typescript",
   "main": "index.js",
   "scripts": {
+    "dev": "npx nodemon",
     "start": "node ./dist/src/server.js",
     "migrate": "npx prisma migrate dev --name init",
     "build": "tsc"

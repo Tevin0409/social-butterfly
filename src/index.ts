@@ -9,8 +9,6 @@ import { Server } from "socket.io";
 import { prismaClient } from "./db/prisma";
 import * as jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../src/secrets";
-import { me } from "./controllers/auth";
-
 const app: Express = express();
 const server = createServer(app); // Create HTTP server with Express
 //initialize socket.io
@@ -53,8 +51,6 @@ io.use(async (socket, next) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
-
   socket.on("joinRoom", async ({ eid }) => {
     console.log("eventId using", eid);
     socket.join(eid);
@@ -67,47 +63,36 @@ io.on("connection", (socket) => {
     io.to(eid).emit("messages", messages);
 
     // Check if the user has booked the event
-    // const booking = await prismaClient.booking.findFirst({
-    //   where: { eventId: eid, userId },
-    // });
+    const decodedToken = jwt.verify(token as string, JWT_SECRET) as any;
+    const booking = await prismaClient.booking.findFirst({
+      where: { eventId: eid, userId: decodedToken.userId },
+    });
 
-    // if (booking) {
-    //   socket.join(eid);
-    //   console.log(`User ${userId} joined room ${eid}`);
-    // } else {
-    //   socket.emit("error", "You are not authorized to join this chat room");
-    // }
+    if (booking) {
+      socket.join(eid);
+    } else {
+      socket.emit("error", "You are not authorized to join this chat room");
+    }
   });
 
   socket.on("chatMessage", async ({ eventId, message }) => {
-    const decodedToken = jwt.verify(token as string, JWT_SECRET) as any; // Assuming you're using JWT
+    console.log("chatMessage", eventId, message);
+    const decodedToken = jwt.verify(token as string, JWT_SECRET) as any;
     const user = await prismaClient.user.findFirst({
       where: { id: decodedToken.userId },
     });
 
-    // Ensure the user is in the room
     if (user) {
-      if (socket.rooms.has(eventId)) {
-        await prismaClient.message.create({
-          data: {
-            content: message,
-            chatRoom: { connect: { eventId } },
-            user: { connect: { id: user.id } },
-          },
-          include: { user: true },
-        });
-        const messages = await prismaClient.message.findMany({
-          where: { chatRoom: { eventId } },
-          orderBy: { createdAt: "desc" },
-        });
+      const mge = await prismaClient.message.create({
+        data: {
+          content: message,
+          chatRoom: { connect: { eventId } },
+          user: { connect: { id: user.id } },
+        },
+        include: { user: true },
+      });
 
-        io.to(eventId).emit("messages", messages);
-      } else {
-        socket.emit(
-          "error",
-          "You are not authorized to send messages in this chat room"
-        );
-      }
+      io.to(eventId).emit("message", mge);
     } else {
       socket.emit("error", "You are not authorized to join this chat room");
     }

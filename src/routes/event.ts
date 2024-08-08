@@ -5,8 +5,8 @@ import {
   deleteEvent,
   editEvent,
   fetchAllEvents,
+  fetchAttendees,
   fetchCategories,
-  fetchChatMessages,
   fetchEventById,
   fetchEventsByCategory,
   fetchUserEvents,
@@ -34,6 +34,7 @@ eventRoutes.get(
   "/fetch-events/category/:category",
   errorHandler(fetchEventsByCategory)
 );
-eventRoutes.get("/chat/:eventId", errorHandler(fetchChatMessages));
+
+eventRoutes.get("/fetch-attendees/:id", errorHandler(fetchAttendees));
 
 export default eventRoutes;
