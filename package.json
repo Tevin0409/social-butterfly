@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
-    "start": "node ./index.js",
+    "start": "node ./dist/src/index.js",
     "migrate": "npx prisma migrate dev --name init",
     "build": "tsc"
   },
